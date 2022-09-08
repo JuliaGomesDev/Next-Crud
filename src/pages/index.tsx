@@ -8,7 +8,9 @@ export default function Home() {
       bg-gradient-to-r from-blue-500 to-purple-500
       text-white`}
     >
-      <Layout titulo="App">Corpo</Layout>
+      <Layout titulo="Cadastro simples">
+        <span>Conteúdo</span>
+      </Layout>
     </div>
   )
 }
