@@ -1,11 +1,11 @@
 import Entrada from './Entrada'
 
-interface formularioProps {}
+interface FormularioProps {}
 
-export default function Formulario(props: formularioProps) {
+export default function Formulario(props: FormularioProps) {
   return (
     <div>
-      <Entrada></Entrada>
+      <Entrada texto="Nome" valor="Teste"></Entrada>
     </div>
   )
 }
