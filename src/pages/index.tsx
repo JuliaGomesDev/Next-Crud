@@ -1,9 +1,13 @@
+import { useState } from 'react'
 import Botao from '../components/Botao'
+import Formulario from '../components/Formulario'
 import Layout from '../components/Layout'
 import Tabela from '../components/Tabela'
 import Cliente from '../core/Cliente'
 
 export default function Home() {
+  const [visivel, setVisivel] = useState<'tabela' | 'forms'>('tabela')
+
   const clientes = [
     new Cliente('Ana', 20, '1'),
     new Cliente('Bia', 22, '2'),
@@ -26,16 +30,29 @@ export default function Home() {
       text-white`}
     >
       <Layout titulo="Cadastro simples">
-        <div className="flex justify-end">
-          <Botao cor="green" className="mb-4">
-            Novo Cliente
-          </Botao>
-        </div>
-        <Tabela
-          clientes={clientes}
-          clienteSelecionado={clienteSelecionado}
-          clienteExcluido={clienteExcluido}
-        ></Tabela>
+        {visivel === 'tabela' ? (
+          <>
+            <div className="flex justify-end">
+              <Botao
+                cor="green"
+                className="mb-4"
+                onClick={() => setVisivel('forms')}
+              >
+                Novo Cliente
+              </Botao>
+            </div>
+            <Tabela
+              clientes={clientes}
+              clienteSelecionado={clienteSelecionado}
+              clienteExcluido={clienteExcluido}
+            ></Tabela>
+          </>
+        ) : (
+          <Formulario
+            cliente={clientes[0]}
+            cancelado={() => setVisivel('tabela')}
+          />
+        )}
       </Layout>
     </div>
   )
