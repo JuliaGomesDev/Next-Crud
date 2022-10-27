@@ -1,20 +1,27 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Botao from '../components/Botao'
 import Formulario from '../components/Formulario'
 import Layout from '../components/Layout'
 import Tabela from '../components/Tabela'
 import Cliente from '../core/Cliente'
+import ClienteRepositorio from '../core/ClienteRepositorio'
+import ColecaoCliente from '../firebase/db/ColecaoCliente'
 
 export default function Home() {
+  const repo: ClienteRepositorio = new ColecaoCliente()
+
   const [cliente, setCliente] = useState<Cliente>(Cliente.empty())
+  const [clientes, setClientes] = useState<Cliente[]>([])
   const [visivel, setVisivel] = useState<'tabela' | 'forms'>('tabela')
 
-  const clientes = [
-    new Cliente('Ana', 20, '1'),
-    new Cliente('Bia', 22, '2'),
-    new Cliente('Carlos', 33, '3'),
-    new Cliente('Daniel', 58, '4')
-  ]
+  useEffect(obterTodos, [])
+
+  function obterTodos() {
+    repo.obterTodos().then((clientes) => {
+      setClientes(clientes)
+      setVisivel('tabela')
+    })
+  }
 
   function clienteSelecionado(cliente: Cliente) {
     setCliente(cliente)
@@ -30,14 +37,16 @@ export default function Home() {
     setVisivel('forms')
   }
 
-  function salvarCliente(cliente: Cliente) {
-    console.log(cliente)
+  async function salvarCliente(cliente: Cliente) {
+    await repo.salvar(cliente)
+    obterTodos()
   }
+
   return (
     <div
       className={`
       flex justify-center items-center h-screen 
-      bg-gradient-to-r from-slate-700 to-black
+      bg-gradient-to-r from-blue-500 to-purple-500
       text-white`}
     >
       <Layout titulo="Cadastro simples">
