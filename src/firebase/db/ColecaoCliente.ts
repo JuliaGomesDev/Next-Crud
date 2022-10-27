@@ -1,3 +1,4 @@
+import firebase from '../config'
 import Cliente from '../../core/Cliente'
 import ClienteRepositorio from '../../core/ClienteRepositorio'
 
@@ -9,21 +10,39 @@ export default class ColecaoCliente implements ClienteRepositorio {
         idade: cliente.idade
       }
     },
-    fromFirestore(snapshot, options): Cliente {
+    fromFirestore(
+      snapshot: firebase.firestore.QueryDocumentSnapshot,
+      options: firebase.firestore.SnapshotOptions
+    ): Cliente {
       const data = snapshot.data(options)
       return new Cliente(data.nome, data.idade, snapshot.id)
     }
   }
 
   async salvar(cliente: Cliente): Promise<Cliente> {
-    return null
+    if (cliente?.id) {
+      await this.#colecao().doc(cliente.id).set(cliente)
+      return cliente
+    } else {
+      const docRef = await this.#colecao().add(cliente)
+      const doc = await docRef.get()
+      return doc.data()
+    }
   }
 
   async exluir(cliente: Cliente): Promise<void> {
-    return null
+    return this.#colecao().doc(cliente.id).delete()
   }
 
-  async obterTodos(cliente: Cliente): Promise<Cliente[]> {
-    return null
+  async obterTodos(): Promise<Cliente[]> {
+    const query = await this.#colecao().get()
+    return query.docs.map((doc) => doc.data()) ?? []
+  }
+
+  #colecao() {
+    return firebase
+      .firestore()
+      .collection('clientes')
+      .withConverter(this.#conversor)
   }
 }
